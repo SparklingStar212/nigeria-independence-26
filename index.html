@@ -5,71 +5,230 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="theme-color" content="#020705">
 <title>NIGERIA — 01.10.1960 →</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<div class="loader" id="loader"><div class="loader-logo">NG<span>/</span>60</div><small>ENTERING THE STORY</small></div>
+
+<div class="loader" id="loader">
+  <div class="loader-logo">NG<span>/</span>60</div>
+  <small>ENTERING THE STORY</small>
+</div>
+
 <div class="noise"></div>
 <div class="scanlines"></div>
-<div class="progress"><span id="progress"></span></div>
+
+<div class="progress">
+  <span id="progress"></span>
+</div>
 
 <header>
-  <a class="mini-logo" href="#start"><i></i><span>NIGERIA</span></a>
-  <div class="chapter" id="chapter">01 — BEGINNING</div>
-  <div class="hint">SCROLL <b>↔</b></div>
+  <a class="mini-logo" href="#start">
+    <i></i>
+    <span>NIGERIA</span>
+  </a>
+
+  <div class="chapter" id="chapter">
+    01 — BEGINNING
+  </div>
+
+  <div class="hint">
+    SCROLL <b>↔</b>
+  </div>
 </header>
 
 <main class="world" id="start">
+
   <section class="track" id="track">
 
+    <!-- HERO -->
     <article class="panel p-hero">
+
       <canvas id="particles"></canvas>
-      <div class="flag-slice one"></div><div class="flag-slice two"></div>
-      <div class="hero-number">60</div>
+
+      <div class="flag-slice one"></div>
+      <div class="flag-slice two"></div>
+
+      <div class="hero-number">
+        60
+      </div>
+
       <div class="hero-content">
-        <p class="micro">01 OCTOBER 1960</p>
-        <h1>NIGERIA<span>.</span></h1>
-        <div class="hero-sub"><span>INDEPENDENCE</span><i></i><span>IDENTITY</span><i></i><span>POSSIBILITY</span></div>
+
+        <p class="micro">
+          01 OCTOBER 1960
+        </p>
+
+        <h1>
+          NIGERIA<span>.</span>
+        </h1>
+
+        <div class="hero-sub">
+          <span>INDEPENDENCE</span>
+          <i></i>
+          <span>IDENTITY</span>
+          <i></i>
+          <span>POSSIBILITY</span>
+        </div>
+
       </div>
-      <div class="hero-bottom">A STORY IN MOTION <b>→</b></div>
+
+      <div class="hero-bottom">
+        A STORY IN MOTION <b>→</b>
+      </div>
+
     </article>
 
+
+    <!-- BEGINNING -->
     <article class="panel p-birth">
-      <div class="giant-word">BEGIN</div>
+
+      <div class="giant-word">
+        BEGIN
+      </div>
+
       <div class="birth-copy">
-        <p class="micro">01 / THE BEGINNING</p>
-        <h2>ONE DATE.<br><em>A THOUSAND<br>FUTURES.</em></h2>
-        <p class="body-copy">On 1 October 1960, Nigeria became independent. A flag changed. A chapter opened.</p>
+
+        <p class="micro">
+          01 / THE BEGINNING
+        </p>
+
+        <h2>
+          ONE DATE.<br>
+          <em>
+            A THOUSAND<br>
+            FUTURES.
+          </em>
+        </h2>
+
+        <p class="body-copy">
+          On 1 October 1960, Nigeria became independent.
+          A flag changed. A chapter opened.
+        </p>
+
       </div>
-      <div class="date-ring"><span>01</span><b>10</b><small>1960</small></div>
-      <div class="orbit orbit1"></div><div class="orbit orbit2"></div>
+
+      <div class="date-ring">
+        <span>01</span>
+        <b>10</b>
+        <small>1960</small>
+      </div>
+
+      <div class="orbit orbit1"></div>
+      <div class="orbit orbit2"></div>
+
     </article>
 
+
+    <!-- TIMELINE -->
     <article class="panel p-time">
-      <div class="time-top"><p class="micro">02 / THE ROAD</p><span>KEEP MOVING →</span></div>
+
+      <div class="time-top">
+
+        <p class="micro">
+          02 / THE ROAD
+        </p>
+
+        <span>
+          KEEP MOVING →
+        </span>
+
+      </div>
+
       <div class="years">
-        <div class="year active" data-year="1960"><small>01</small><strong>1960</strong><span>INDEPENDENCE</span></div>
-        <div class="year" data-year="1963"><small>02</small><strong>1963</strong><span>REPUBLIC</span></div>
-        <div class="year" data-year="1999"><small>03</small><strong>1999</strong><span>FOURTH REPUBLIC</span></div>
-        <div class="year" data-year="2026"><small>04</small><strong>2026</strong><span>NOW</span></div>
+
+        <div class="year active" data-year="1960">
+          <small>01</small>
+          <strong>1960</strong>
+          <span>INDEPENDENCE</span>
+        </div>
+
+        <div class="year" data-year="1963">
+          <small>02</small>
+          <strong>1963</strong>
+          <span>REPUBLIC</span>
+        </div>
+
+        <div class="year" data-year="1999">
+          <small>03</small>
+          <strong>1999</strong>
+          <span>FOURTH REPUBLIC</span>
+        </div>
+
+        <div class="year" data-year="2026">
+          <small>04</small>
+          <strong>2026</strong>
+          <span>NOW</span>
+        </div>
+
       </div>
-      <div class="time-line"><i></i></div>
+
+      <div class="time-line">
+        <i></i>
+      </div>
+
       <div class="time-detail">
-        <div class="detail-year" id="detailYear">1960</div>
-        <div><p class="micro" id="detailKicker">INDEPENDENCE</p><h3 id="detailTitle">A beginning<br>of our own.</h3><p id="detailText">Nigeria became an independent and sovereign nation on October 1.</p></div>
+
+        <div class="detail-year" id="detailYear">
+          1960
+        </div>
+
+        <div>
+
+          <p class="micro" id="detailKicker">
+            INDEPENDENCE
+          </p>
+
+          <h3 id="detailTitle">
+            A beginning<br>
+            of our own.
+          </h3>
+
+          <p id="detailText">
+            Nigeria became an independent and sovereign nation
+            on October 1.
+          </p>
+
+        </div>
+
       </div>
+
     </article>
 
+
+    <!-- PEOPLE -->
     <article class="panel p-pulse">
-      <div class="pulse-bg">CREATE CREATE CREATE</div>
-      <div class="pulse-center">
-        <p class="micro">03 / THE PEOPLE</p>
-        <div class="radar"><i></i><i></i><i></i><i></i><b>WE</b></div>
-        <h2>WE ARE<br><em>THE PULSE.</em></h2>
+
+      <div class="pulse-bg">
+        CREATE CREATE CREATE
       </div>
+
+      <div class="pulse-center">
+
+        <p class="micro">
+          03 / THE PEOPLE
+        </p>
+
+        <div class="radar">
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
+          <b>WE</b>
+        </div>
+
+        <h2>
+          WE ARE<br>
+          <em>THE PULSE.</em>
+        </h2>
+
+      </div>
+
       <div class="floating-word w1">TECH</div>
       <div class="floating-word w2">MUSIC</div>
       <div class="floating-word w3">FILM</div>
@@ -77,52 +236,200 @@
       <div class="floating-word w5">FASHION</div>
       <div class="floating-word w6">SPORT</div>
       <div class="floating-word w7">ART</div>
-      <div class="pulse-caption">Different voices.<br>Different crafts.<br><strong>One country.</strong></div>
+
+      <div class="pulse-caption">
+        Different voices.<br>
+        Different crafts.<br>
+        <strong>One country.</strong>
+      </div>
+
     </article>
 
+
+    <!-- CULTURE -->
     <article class="panel p-culture">
-      <div class="culture-head"><p class="micro">04 / CULTURE</p><span>TOUCH / CLICK THE OBJECTS</span></div>
+
+      <div class="culture-head">
+
+        <p class="micro">
+          04 / CULTURE
+        </p>
+
+        <span>
+          TOUCH / CLICK THE OBJECTS
+        </span>
+
+      </div>
+
       <div class="culture-stage">
-        <div class="culture-object obj-a" data-name="MUSIC">♪<small>MUSIC</small></div>
-        <div class="culture-object obj-b" data-name="LANGUAGE">A<small>LANGUAGE</small></div>
-        <div class="culture-object obj-c" data-name="FOOD">◒<small>FOOD</small></div>
-        <div class="culture-object obj-d" data-name="FASHION">✦<small>FASHION</small></div>
-        <div class="culture-object obj-e" data-name="ART">∿<small>ART</small></div>
-        <div class="culture-center"><span id="cultureNum">01</span><h2 id="cultureName">MUSIC</h2><p id="cultureText">Rhythm becomes memory.</p></div>
+
+        <div
+          class="culture-object obj-a"
+          data-name="MUSIC"
+        >
+          ♪
+          <small>MUSIC</small>
+        </div>
+
+        <div
+          class="culture-object obj-b"
+          data-name="LANGUAGE"
+        >
+          A
+          <small>LANGUAGE</small>
+        </div>
+
+        <div
+          class="culture-object obj-c"
+          data-name="FOOD"
+        >
+          ◒
+          <small>FOOD</small>
+        </div>
+
+        <div
+          class="culture-object obj-d"
+          data-name="FASHION"
+        >
+          ✦
+          <small>FASHION</small>
+        </div>
+
+        <div
+          class="culture-object obj-e"
+          data-name="ART"
+        >
+          ∿
+          <small>ART</small>
+        </div>
+
+        <div class="culture-center">
+
+          <span id="cultureNum">
+            01
+          </span>
+
+          <h2 id="cultureName">
+            MUSIC
+          </h2>
+
+          <p id="cultureText">
+            Rhythm becomes memory.
+          </p>
+
+        </div>
+
       </div>
+
     </article>
 
+
+    <!-- FUTURE -->
     <article class="panel p-future">
+
       <canvas id="future"></canvas>
+
       <div class="future-grid"></div>
+
       <div class="future-copy">
-        <p class="micro">05 / NEXT</p>
-        <div class="future-years"><span>1960</span><i></i><span>2026</span><i></i><strong>2040?</strong></div>
-        <h2>THE STORY<br><em>ISN'T FINISHED.</em></h2>
-        <p>Independence was a beginning. The next chapter is being built in real time.</p>
+
+        <p class="micro">
+          05 / NEXT
+        </p>
+
+        <div class="future-years">
+
+          <span>1960</span>
+          <i></i>
+
+          <span>2026</span>
+          <i></i>
+
+          <strong>
+            2040?
+          </strong>
+
+        </div>
+
+        <h2>
+          THE STORY<br>
+          <em>ISN'T FINISHED.</em>
+        </h2>
+
+        <p>
+          Independence was a beginning.
+          The next chapter is being built in real time.
+        </p>
+
       </div>
+
       <div class="cursor-orbit"></div>
+
     </article>
 
+
+    <!-- FINAL -->
     <article class="panel p-end">
-      <div class="end-bg">NIGERIA</div>
-      <div class="end-content">
-        <p class="micro">06 / YOUR TURN</p>
-        <h2>WHAT WILL<br><em>YOU ADD?</em></h2>
-        <p>Leave one sentence for the Nigeria you want to see.</p>
-        <form id="form">
-          <input id="name" maxlength="32" placeholder="YOUR NAME" required>
-          <input id="message" maxlength="120" placeholder="I want Nigeria to..." required>
-          <button>WRITE IT <b>↗</b></button>
-        </form>
-        <div id="messageOut" class="message-out"></div>
+
+      <div class="end-bg">
+        NIGERIA
       </div>
-      <footer>01.10.1960 — THE STORY CONTINUES.</footer>
+
+      <div class="end-content">
+
+        <p class="micro">
+          06 / YOUR TURN
+        </p>
+
+        <h2>
+          WHAT WILL<br>
+          <em>YOU ADD?</em>
+        </h2>
+
+        <p>
+          Leave one sentence for the Nigeria you want to see.
+        </p>
+
+        <form id="form">
+
+          <input
+            id="name"
+            maxlength="32"
+            placeholder="YOUR NAME"
+            required
+          >
+
+          <input
+            id="message"
+            maxlength="120"
+            placeholder="I want Nigeria to..."
+            required
+          >
+
+          <button>
+            WRITE IT <b>↗</b>
+          </button>
+
+        </form>
+
+        <div
+          id="messageOut"
+          class="message-out"
+        ></div>
+
+      </div>
+
+      <footer>
+        01.10.1960 — THE STORY CONTINUES.
+      </footer>
+
     </article>
 
   </section>
+
 </main>
 
 <script src="script.js"></script>
+
 </body>
-</html>
+  </html>
