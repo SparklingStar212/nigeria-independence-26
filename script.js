@@ -534,3 +534,841 @@ if (cultureObjects.length) {
     0
   );
 }
+
+
+
+/* =========================================
+   NIGERIA INDEPENDENCE — CINEMATIC V3
+   RESPONSIVE SCRIPT — PART 2/2
+   Form + Canvas Effects + Performance
+   ========================================= */
+
+
+/* =========================================
+   MESSAGE FORM
+   ========================================= */
+
+const form =
+  document.getElementById("form");
+
+const nameInput =
+  document.getElementById("name");
+
+const messageInput =
+  document.getElementById("message");
+
+const messageOut =
+  document.getElementById("messageOut");
+
+const STORAGE_KEY =
+  "nigeria-independence-message";
+
+
+/* Show a saved message */
+
+function displayMessage(name, message) {
+  if (!messageOut) return;
+
+  messageOut.textContent =
+    `${name.toUpperCase()} — “${message}”`;
+}
+
+
+/* Load previous message */
+
+function loadSavedMessage() {
+  try {
+    const saved =
+      localStorage.getItem(
+        STORAGE_KEY
+      );
+
+    if (!saved) return;
+
+    const data =
+      JSON.parse(saved);
+
+    if (
+      data &&
+      data.name &&
+      data.message
+    ) {
+      displayMessage(
+        data.name,
+        data.message
+      );
+    }
+
+  } catch (error) {
+    console.warn(
+      "Saved message could not be loaded."
+    );
+  }
+}
+
+loadSavedMessage();
+
+
+/* Save new message */
+
+if (form) {
+
+  form.addEventListener(
+    "submit",
+    (event) => {
+
+      event.preventDefault();
+
+      const name =
+        nameInput?.value.trim();
+
+      const message =
+        messageInput?.value.trim();
+
+
+      if (!name || !message) {
+        return;
+      }
+
+
+      const entry = {
+        name,
+        message,
+        createdAt:
+          new Date().toISOString()
+      };
+
+
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(entry)
+        );
+      } catch (error) {
+        console.warn(
+          "Message could not be saved."
+        );
+      }
+
+
+      displayMessage(
+        name,
+        message
+      );
+
+
+      form.reset();
+
+    }
+  );
+
+}
+
+
+/* =========================================
+   CANVAS HELPERS
+   ========================================= */
+
+const particleCanvas =
+  document.getElementById("particles");
+
+const futureCanvas =
+  document.getElementById("future");
+
+const particleContext =
+  particleCanvas?.getContext("2d");
+
+const futureContext =
+  futureCanvas?.getContext("2d");
+
+
+/*
+  Keep device pixel ratio under control.
+
+  Rendering a canvas at full DPR on some
+  phones is unnecessarily expensive.
+*/
+
+function getPixelRatio() {
+  return Math.min(
+    window.devicePixelRatio || 1,
+    1.5
+  );
+}
+
+
+/* Resize a canvas cleanly */
+
+function resizeCanvas(
+  canvas,
+  context
+) {
+
+  if (!canvas || !context) {
+    return;
+  }
+
+
+  const rect =
+    canvas.getBoundingClientRect();
+
+  const ratio =
+    getPixelRatio();
+
+
+  canvas.width =
+    Math.max(
+      1,
+      Math.floor(
+        rect.width * ratio
+      )
+    );
+
+  canvas.height =
+    Math.max(
+      1,
+      Math.floor(
+        rect.height * ratio
+      )
+    );
+
+
+  context.setTransform(
+    ratio,
+    0,
+    0,
+    ratio,
+    0,
+    0
+  );
+}
+
+
+/* =========================================
+   HERO PARTICLES
+   ========================================= */
+
+let particles = [];
+
+
+/* Number of particles based on device */
+
+function getParticleCount() {
+
+  if (prefersReducedMotion) {
+    return 12;
+  }
+
+  if (
+    window.innerWidth <= 600 ||
+    isTouchDevice
+  ) {
+    return 24;
+  }
+
+  return 55;
+}
+
+
+/* Build particle system */
+
+function createParticles() {
+
+  if (!particleCanvas) {
+    return;
+  }
+
+
+  particles = [];
+
+
+  const width =
+    particleCanvas.clientWidth;
+
+  const height =
+    particleCanvas.clientHeight;
+
+
+  const count =
+    getParticleCount();
+
+
+  for (
+    let i = 0;
+    i < count;
+    i++
+  ) {
+
+    particles.push({
+
+      x:
+        Math.random() * width,
+
+      y:
+        Math.random() * height,
+
+      radius:
+        Math.random() * 1.5 + 0.4,
+
+      speedX:
+        (Math.random() - 0.5) *
+        0.15,
+
+      speedY:
+        (Math.random() - 0.5) *
+        0.18,
+
+      opacity:
+        Math.random() * 0.5 + 0.15
+
+    });
+
+  }
+
+}
+
+
+/* Draw hero particles */
+
+function drawParticles() {
+
+  if (
+    !particleCanvas ||
+    !particleContext
+  ) {
+    return;
+  }
+
+
+  const width =
+    particleCanvas.clientWidth;
+
+  const height =
+    particleCanvas.clientHeight;
+
+
+  particleContext.clearRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+
+  for (
+    const particle of particles
+  ) {
+
+    particle.x +=
+      particle.speedX;
+
+    particle.y +=
+      particle.speedY;
+
+
+    /* Wrap around canvas */
+
+    if (particle.x < 0) {
+      particle.x = width;
+    }
+
+    if (particle.x > width) {
+      particle.x = 0;
+    }
+
+    if (particle.y < 0) {
+      particle.y = height;
+    }
+
+    if (particle.y > height) {
+      particle.y = 0;
+    }
+
+
+    particleContext.beginPath();
+
+    particleContext.arc(
+      particle.x,
+      particle.y,
+      particle.radius,
+      0,
+      Math.PI * 2
+    );
+
+    particleContext.fillStyle =
+      `rgba(0, 184, 107, ${particle.opacity})`;
+
+    particleContext.fill();
+
+  }
+
+}
+
+
+/* =========================================
+   FUTURE NETWORK
+   ========================================= */
+
+let futureNodes = [];
+
+
+/* Number of nodes */
+
+function getFutureNodeCount() {
+
+  if (prefersReducedMotion) {
+    return 8;
+  }
+
+  if (
+    window.innerWidth <= 600 ||
+    isTouchDevice
+  ) {
+    return 14;
+  }
+
+  return 30;
+}
+
+
+/* Create network nodes */
+
+function createFutureNodes() {
+
+  if (!futureCanvas) {
+    return;
+  }
+
+
+  futureNodes = [];
+
+
+  const width =
+    futureCanvas.clientWidth;
+
+  const height =
+    futureCanvas.clientHeight;
+
+
+  const count =
+    getFutureNodeCount();
+
+
+  for (
+    let i = 0;
+    i < count;
+    i++
+  ) {
+
+    futureNodes.push({
+
+      x:
+        Math.random() * width,
+
+      y:
+        Math.random() * height,
+
+      vx:
+        (Math.random() - 0.5) *
+        0.12,
+
+      vy:
+        (Math.random() - 0.5) *
+        0.12,
+
+      radius:
+        Math.random() * 1.4 + 0.6
+
+    });
+
+  }
+
+}
+
+
+/* Draw future network */
+
+function drawFutureNetwork() {
+
+  if (
+    !futureCanvas ||
+    !futureContext
+  ) {
+    return;
+  }
+
+
+  const width =
+    futureCanvas.clientWidth;
+
+  const height =
+    futureCanvas.clientHeight;
+
+
+  futureContext.clearRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+
+  /* Move nodes */
+
+  futureNodes.forEach(
+    (node) => {
+
+      node.x += node.vx;
+      node.y += node.vy;
+
+
+      if (
+        node.x <= 0 ||
+        node.x >= width
+      ) {
+        node.vx *= -1;
+      }
+
+
+      if (
+        node.y <= 0 ||
+        node.y >= height
+      ) {
+        node.vy *= -1;
+      }
+
+
+      node.x =
+        clamp(
+          node.x,
+          0,
+          width
+        );
+
+      node.y =
+        clamp(
+          node.y,
+          0,
+          height
+        );
+
+    }
+  );
+
+
+  /*
+    Connect nearby nodes.
+
+    Smaller connection distance on phones
+    means fewer lines and better performance.
+  */
+
+  const connectionDistance =
+    window.innerWidth <= 600
+      ? 105
+      : 150;
+
+
+  for (
+    let i = 0;
+    i < futureNodes.length;
+    i++
+  ) {
+
+    for (
+      let j = i + 1;
+      j < futureNodes.length;
+      j++
+    ) {
+
+      const first =
+        futureNodes[i];
+
+      const second =
+        futureNodes[j];
+
+
+      const dx =
+        first.x - second.x;
+
+      const dy =
+        first.y - second.y;
+
+
+      const distance =
+        Math.sqrt(
+          dx * dx +
+          dy * dy
+        );
+
+
+      if (
+        distance <
+        connectionDistance
+      ) {
+
+        const opacity =
+          (1 -
+            distance /
+            connectionDistance) *
+          0.18;
+
+
+        futureContext.beginPath();
+
+        futureContext.moveTo(
+          first.x,
+          first.y
+        );
+
+        futureContext.lineTo(
+          second.x,
+          second.y
+        );
+
+        futureContext.strokeStyle =
+          `rgba(0, 184, 107, ${opacity})`;
+
+        futureContext.lineWidth =
+          0.7;
+
+        futureContext.stroke();
+
+      }
+
+    }
+
+  }
+
+
+  /* Draw nodes */
+
+  futureNodes.forEach(
+    (node) => {
+
+      futureContext.beginPath();
+
+      futureContext.arc(
+        node.x,
+        node.y,
+        node.radius,
+        0,
+        Math.PI * 2
+      );
+
+      futureContext.fillStyle =
+        "rgba(0, 184, 107, 0.55)";
+
+      futureContext.fill();
+
+    }
+  );
+
+}
+
+
+/* =========================================
+   CANVAS INITIALIZATION
+   ========================================= */
+
+function initializeCanvases() {
+
+  resizeCanvas(
+    particleCanvas,
+    particleContext
+  );
+
+  resizeCanvas(
+    futureCanvas,
+    futureContext
+  );
+
+
+  createParticles();
+
+  createFutureNodes();
+
+}
+
+initializeCanvases();
+
+
+/* =========================================
+   CANVAS ANIMATION LOOP
+   ========================================= */
+
+let pageVisible = true;
+
+
+document.addEventListener(
+  "visibilitychange",
+  () => {
+
+    pageVisible =
+      !document.hidden;
+
+  }
+);
+
+
+/*
+  One animation loop controls both canvases.
+
+  This is lighter than running multiple
+  independent animation loops.
+*/
+
+function animateCanvases() {
+
+  if (pageVisible) {
+
+    drawParticles();
+
+    drawFutureNetwork();
+
+  }
+
+
+  requestAnimationFrame(
+    animateCanvases
+  );
+
+}
+
+requestAnimationFrame(
+  animateCanvases
+);
+
+
+/* =========================================
+   CANVAS RESIZE
+   ========================================= */
+
+let canvasResizeTimer;
+
+
+function handleCanvasResize() {
+
+  clearTimeout(
+    canvasResizeTimer
+  );
+
+
+  canvasResizeTimer =
+    setTimeout(
+      () => {
+
+        initializeCanvases();
+
+      },
+      180
+    );
+
+}
+
+
+window.addEventListener(
+  "resize",
+  handleCanvasResize
+);
+
+
+if (window.visualViewport) {
+
+  window.visualViewport.addEventListener(
+    "resize",
+    handleCanvasResize
+  );
+
+}
+
+
+/* =========================================
+   MOBILE PERFORMANCE
+   ========================================= */
+
+/*
+  On touch devices we don't need mouse-based
+  visual effects.
+
+  The page keeps the cinematic look while
+  avoiding unnecessary work on phones.
+*/
+
+if (!isTouchDevice) {
+
+  const orbit =
+    document.querySelector(
+      ".cursor-orbit"
+    );
+
+
+  if (orbit) {
+
+    let pointerX = 0;
+    let pointerY = 0;
+
+
+    window.addEventListener(
+      "pointermove",
+      (event) => {
+
+        pointerX =
+          (
+            event.clientX /
+            window.innerWidth -
+            0.5
+          ) * 18;
+
+
+        pointerY =
+          (
+            event.clientY /
+            window.innerHeight -
+            0.5
+          ) * 18;
+
+
+        orbit.style.transform =
+          `translate(
+            ${pointerX}px,
+            calc(-50% + ${pointerY}px)
+          )`;
+
+      },
+      {
+        passive: true
+      }
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   INITIAL PAGE SYNC
+   ========================================= */
+
+/*
+  Run one final measurement after fonts and
+  layout have had time to settle.
+*/
+
+window.addEventListener(
+  "load",
+  () => {
+
+    setTimeout(
+      () => {
+
+        calculateDimensions();
+
+        initializeCanvases();
+
+      },
+      250
+    );
+
+  }
+);
