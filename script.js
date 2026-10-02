@@ -1,7 +1,7 @@
 /* =========================================
    NIGERIA INDEPENDENCE — CINEMATIC V3
-   RESPONSIVE SCRIPT — PART 1/2
-   Scroll Engine + Loader + Timeline + Culture
+   RESPONSIVE SCRIPT — FULLY INTEGRATED
+   Scroll Engine + Loader + Synchronized Touch Inertia + Timeline + Culture + Canvas
    ========================================= */
 
 const world = document.querySelector(".world");
@@ -19,6 +19,64 @@ const prefersReducedMotion = window.matchMedia(
 const isTouchDevice = window.matchMedia(
   "(hover: none) and (pointer: coarse)"
 ).matches;
+
+
+/* =========================================
+   SYNCHRONIZED TOUCH MOMENTUM & INERTIA
+   ========================================= */
+
+let startY = 0;
+let lastY = 0;
+let touchVelocity = 0;
+let lastTouchTime = 0;
+let isDragging = false;
+let animationId = null;
+
+window.addEventListener("pointerdown", (e) => {
+  if (!isTouchDevice) return;
+  isDragging = true;
+  startY = e.clientY;
+  lastY = e.clientY;
+  lastTouchTime = performance.now();
+  cancelAnimationFrame(animationId);
+}, { passive: true });
+
+window.addEventListener("pointermove", (e) => {
+  if (!isDragging || !isTouchDevice) return;
+  const currentY = e.clientY;
+  const currentTime = performance.now();
+  
+  const deltaY = currentY - lastY;
+  const deltaTime = currentTime - lastTouchTime;
+  
+  if (deltaTime > 0) {
+    // Calculate vertical drag velocity to translate into scroll momentum
+    touchVelocity = -deltaY / deltaTime; 
+  }
+  
+  lastY = currentY;
+  lastTouchTime = currentTime;
+
+  // Directly scroll the window proportionally to the drag distance
+  window.scrollBy({ top: -deltaY * 1.5, behavior: 'auto' });
+}, { passive: true });
+
+window.addEventListener("pointerup", () => {
+  if (!isTouchDevice || !isDragging) return;
+  isDragging = false;
+
+  // Inertia glide loop using vertical window scrolling
+  function inertiaScrollStep() {
+    if (Math.abs(touchVelocity) < 0.05) return;
+
+    window.scrollBy({ top: touchVelocity * 16, behavior: 'auto' });
+    touchVelocity *= 0.92; // Friction damping
+
+    animationId = requestAnimationFrame(inertiaScrollStep);
+  }
+
+  animationId = requestAnimationFrame(inertiaScrollStep);
+}, { passive: true });
 
 
 /* =========================================
@@ -145,12 +203,12 @@ function animateHorizontalScroll() {
 
 
   /*
-    On phones/touch devices we follow the
-    scroll more closely.
+     On phones/touch devices we follow the
+     scroll more closely.
 
-    This makes the horizontal experience
-    feel responsive instead of lagging
-    behind the user's finger.
+     This makes the horizontal experience
+     feel responsive instead of lagging
+     behind the user's finger.
   */
 
   if (
@@ -172,13 +230,13 @@ function animateHorizontalScroll() {
 
   if (track) {
     track.style.transform =
-      `translate3d(${-currentX}px, 0, 0)`;
+      `translate3d(${- currentX}px, 0, 0)`;
   }
 
 
   if (progressBar) {
     progressBar.style.width =
-      `${currentProgress * 100}%`;
+      `${ currentProgress * 100 }% `;
   }
 
 
@@ -200,7 +258,7 @@ requestAnimationFrame(
 
 
 /* =========================================
-   RESIZE HANDLING
+   ROBUST RESIZE & VIEWPORT HANDLING
    ========================================= */
 
 let resizeTimer;
@@ -210,39 +268,26 @@ function handleResize() {
 
   resizeTimer = setTimeout(() => {
     calculateDimensions();
+    initializeCanvases();
 
-    currentProgress =
-      getScrollProgress();
-
-    targetX =
-      currentProgress *
-      maxHorizontalScroll;
-
+    currentProgress = getScrollProgress();
+    targetX = currentProgress * maxHorizontalScroll;
     currentX = targetX;
 
     if (track) {
-      track.style.transform =
-        `translate3d(${-currentX}px, 0, 0)`;
+      track.style.transform = `translate3d(${- currentX}px, 0, 0)`;
     }
-  }, 120);
+  }, 250);
 }
 
-window.addEventListener(
-  "resize",
-  handleResize
-);
-
-
-/*
-  Mobile browsers resize the visual viewport
-  when their address bar appears/disappears.
-*/
+window.addEventListener("resize", handleResize, { passive: true });
 
 if (window.visualViewport) {
-  window.visualViewport.addEventListener(
-    "resize",
-    handleResize
-  );
+  window.visualViewport.addEventListener("resize", () => {
+    if (window.visualViewport.width !== window.innerWidth) {
+      handleResize();
+    }
+  }, { passive: true });
 }
 
 
@@ -269,54 +314,66 @@ const timelineProgress =
   document.querySelector(".time-line i");
 
 
-/*
-  Content shown when a year is selected.
-*/
-
 const timelineData = {
   "1960": {
     kicker: "INDEPENDENCE",
 
     title:
-      "A beginning<br>of our own.",
+      "A beginning of our own.",
 
-    text:
-      "Nigeria became an independent and sovereign nation on October 1."
-  },
+  
+text:
+  "Nigeria became an independent and sovereign nation on October 1."
 
-  "1963": {
-    kicker: "REPUBLIC",
 
-    title:
-      "A new chapter<br>takes shape.",
 
-    text:
-      "A new chapter in Nigeria's constitutional story."
-  },
+},
 
-  "1999": {
-    kicker: "FOURTH REPUBLIC",
+"1963": {
+  kicker: "REPUBLIC",
 
-    title:
-      "Another chapter<br>begins.",
+    
+title:
+  "A new chapter takes shape.",
 
-    text:
-      "Another chapter in Nigeria's democratic story."
-  },
+    
+text:
+  "A new chapter in Nigeria's constitutional story."
 
-  "2026": {
-    kicker: "NOW",
 
-    title:
-      "The story<br>continues.",
 
-    text:
-      "The future is still being written."
-  }
+},
+
+"1999": {
+  kicker: "FOURTH REPUBLIC",
+
+    
+title:
+  "Another chapter begins.",
+
+    
+text:
+  "Another chapter in Nigeria's democratic story."
+
+
+
+},
+
+"2026": {
+  kicker: "NOW",
+
+    
+title:
+  "The story continues.",
+
+    
+text:
+  "The future is still being written."
+
+
+
+}
 };
-
-
-/* Change timeline content */
 
 function selectYear(yearElement, index) {
   if (!yearElement) return;
@@ -329,20 +386,11 @@ function selectYear(yearElement, index) {
 
   if (!data) return;
 
-
-  /* Remove old active state */
-
   years.forEach((year) => {
     year.classList.remove("active");
   });
 
-
-  /* Activate selected year */
-
   yearElement.classList.add("active");
-
-
-  /* Update text */
 
   if (detailYear) {
     detailYear.textContent =
@@ -364,34 +412,27 @@ function selectYear(yearElement, index) {
       data.text;
   }
 
-
-  /* Update timeline green line */
-
   if (timelineProgress) {
     const percentage =
       ((index + 1) / years.length) * 100;
 
-    timelineProgress.style.width =
-      `${percentage}%`;
+    
+timelineProgress.style.width =
+  `${ percentage }% `;
+
+
+
   }
 }
 
-
-/* Add interaction */
-
 years.forEach((year, index) => {
-
   year.addEventListener(
     "click",
     () => {
       selectYear(year, index);
     }
   );
-
 });
-
-
-/* Set initial timeline state */
 
 if (years.length) {
   const activeIndex =
@@ -409,10 +450,9 @@ if (years.length) {
   );
 }
 
-
 /* =========================================
-   CULTURE INTERACTIONS
-   ========================================= */
+CULTURE INTERACTIONS
+========================================= */
 
 const cultureObjects =
   [
@@ -429,7 +469,6 @@ const cultureName =
 
 const cultureText =
   document.getElementById("cultureText");
-
 
 const cultureData = {
   MUSIC: {
@@ -458,9 +497,6 @@ const cultureData = {
   }
 };
 
-
-/* Select culture object */
-
 function selectCulture(
   cultureObject,
   index
@@ -475,16 +511,13 @@ function selectCulture(
 
   if (!data) return;
 
-
   cultureObjects.forEach((item) => {
     item.classList.remove("active");
   });
 
-
   cultureObject.classList.add(
     "active"
   );
-
 
   if (cultureNumber) {
     cultureNumber.textContent =
@@ -494,11 +527,9 @@ function selectCulture(
       );
   }
 
-
   if (cultureName) {
     cultureName.textContent = name;
   }
-
 
   if (cultureText) {
     cultureText.textContent =
@@ -506,12 +537,8 @@ function selectCulture(
   }
 }
 
-
-/* Add click/touch interaction */
-
 cultureObjects.forEach(
   (cultureObject, index) => {
-
     cultureObject.addEventListener(
       "click",
       () => {
@@ -521,12 +548,8 @@ cultureObjects.forEach(
         );
       }
     );
-
   }
 );
-
-
-/* Set first culture object as active */
 
 if (cultureObjects.length) {
   selectCulture(
@@ -535,18 +558,9 @@ if (cultureObjects.length) {
   );
 }
 
-
-
 /* =========================================
-   NIGERIA INDEPENDENCE — CINEMATIC V3
-   RESPONSIVE SCRIPT — PART 2/2
-   Form + Canvas Effects + Performance
-   ========================================= */
-
-
-/* =========================================
-   MESSAGE FORM
-   ========================================= */
+MESSAGE FORM
+========================================= */
 
 const form =
   document.getElementById("form");
@@ -563,18 +577,12 @@ const messageOut =
 const STORAGE_KEY =
   "nigeria-independence-message";
 
-
-/* Show a saved message */
-
 function displayMessage(name, message) {
   if (!messageOut) return;
 
   messageOut.textContent =
-    `${name.toUpperCase()} — “${message}”`;
+    `\({name.toUpperCase()} — “\){message}”`;
 }
-
-
-/* Load previous message */
 
 function loadSavedMessage() {
   try {
@@ -583,21 +591,24 @@ function loadSavedMessage() {
         STORAGE_KEY
       );
 
-    if (!saved) return;
+    
+if (!saved) return;
 
-    const data =
-      JSON.parse(saved);
+const data =
+  JSON.parse(saved);
 
-    if (
-      data &&
-      data.name &&
-      data.message
-    ) {
-      displayMessage(
-        data.name,
-        data.message
-      );
-    }
+if (
+  data &&
+  data.name &&
+  data.message
+) {
+  displayMessage(
+    data.name,
+    data.message
+  );
+}
+
+
 
   } catch (error) {
     console.warn(
@@ -608,66 +619,62 @@ function loadSavedMessage() {
 
 loadSavedMessage();
 
-
-/* Save new message */
-
 if (form) {
-
   form.addEventListener(
     "submit",
     (event) => {
-
       event.preventDefault();
 
-      const name =
-        nameInput?.value.trim();
+      
+  const name =
+    nameInput?.value.trim();
 
-      const message =
-        messageInput?.value.trim();
-
-
-      if (!name || !message) {
-        return;
-      }
+  const message =
+    messageInput?.value.trim();
 
 
-      const entry = {
-        name,
-        message,
-        createdAt:
-          new Date().toISOString()
-      };
+  if (!name || !message) {
+    return;
+  }
 
 
-      try {
-        localStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify(entry)
-        );
-      } catch (error) {
-        console.warn(
-          "Message could not be saved."
-        );
-      }
+  const entry = {
+    name,
+    message,
+    createdAt:
+      new Date().toISOString()
+  };
 
 
-      displayMessage(
-        name,
-        message
-      );
+  try {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(entry)
+    );
+  } catch (error) {
+    console.warn(
+      "Message could not be saved."
+    );
+  }
 
 
-      form.reset();
-
-    }
+  displayMessage(
+    name,
+    message
   );
 
+
+  form.reset();
 }
 
 
+
+);
+}
+
 /* =========================================
-   CANVAS HELPERS
-   ========================================= */
+CANVAS HELPERS
+========================================= */
 
 const particleCanvas =
   document.getElementById("particles");
@@ -681,14 +688,6 @@ const particleContext =
 const futureContext =
   futureCanvas?.getContext("2d");
 
-
-/*
-  Keep device pixel ratio under control.
-
-  Rendering a canvas at full DPR on some
-  phones is unnecessarily expensive.
-*/
-
 function getPixelRatio() {
   return Math.min(
     window.devicePixelRatio || 1,
@@ -696,25 +695,19 @@ function getPixelRatio() {
   );
 }
 
-
-/* Resize a canvas cleanly */
-
 function resizeCanvas(
   canvas,
   context
 ) {
-
   if (!canvas || !context) {
     return;
   }
-
 
   const rect =
     canvas.getBoundingClientRect();
 
   const ratio =
     getPixelRatio();
-
 
   canvas.width =
     Math.max(
@@ -732,7 +725,6 @@ function resizeCanvas(
       )
     );
 
-
   context.setTransform(
     ratio,
     0,
@@ -743,18 +735,13 @@ function resizeCanvas(
   );
 }
 
-
 /* =========================================
-   HERO PARTICLES
-   ========================================= */
+HERO PARTICLES
+========================================= */
 
 let particles = [];
 
-
-/* Number of particles based on device */
-
 function getParticleCount() {
-
   if (prefersReducedMotion) {
     return 12;
   }
@@ -769,18 +756,12 @@ function getParticleCount() {
   return 55;
 }
 
-
-/* Build particle system */
-
 function createParticles() {
-
   if (!particleCanvas) {
     return;
   }
 
-
   particles = [];
-
 
   const width =
     particleCanvas.clientWidth;
@@ -788,50 +769,26 @@ function createParticles() {
   const height =
     particleCanvas.clientHeight;
 
-
   const count =
     getParticleCount();
-
 
   for (
     let i = 0;
     i < count;
     i++
   ) {
-
     particles.push({
-
-      x:
-        Math.random() * width,
-
-      y:
-        Math.random() * height,
-
-      radius:
-        Math.random() * 1.5 + 0.4,
-
-      speedX:
-        (Math.random() - 0.5) *
-        0.15,
-
-      speedY:
-        (Math.random() - 0.5) *
-        0.18,
-
-      opacity:
-        Math.random() * 0.5 + 0.15
-
+      x: Math.random() * width,
+      y: Math.random() * height,
+      radius: Math.random() * 1.5 + 0.4,
+      speedX: (Math.random() - 0.5) * 0.15,
+      speedY: (Math.random() - 0.5) * 0.18,
+      opacity: Math.random() * 0.5 + 0.15
     });
-
   }
-
 }
 
-
-/* Draw hero particles */
-
 function drawParticles() {
-
   if (
     !particleCanvas ||
     !particleContext
@@ -839,13 +796,11 @@ function drawParticles() {
     return;
   }
 
-
   const width =
     particleCanvas.clientWidth;
 
   const height =
     particleCanvas.clientHeight;
-
 
   particleContext.clearRect(
     0,
@@ -854,68 +809,40 @@ function drawParticles() {
     height
   );
 
+  for (const particle of particles) {
+    particle.x += particle.speedX;
+    particle.y += particle.speedY;
 
-  for (
-    const particle of particles
-  ) {
+    
+if (particle.x < 0) particle.x = width;
+if (particle.x > width) particle.x = 0;
+if (particle.y < 0) particle.y = height;
+if (particle.y > height) particle.y = 0;
 
-    particle.x +=
-      particle.speedX;
-
-    particle.y +=
-      particle.speedY;
-
-
-    /* Wrap around canvas */
-
-    if (particle.x < 0) {
-      particle.x = width;
-    }
-
-    if (particle.x > width) {
-      particle.x = 0;
-    }
-
-    if (particle.y < 0) {
-      particle.y = height;
-    }
-
-    if (particle.y > height) {
-      particle.y = 0;
-    }
+particleContext.beginPath();
+particleContext.arc(
+  particle.x,
+  particle.y,
+  particle.radius,
+  0,
+  Math.PI * 2
+);
+particleContext.fillStyle =
+  `rgba(0, 184, 107, ${ particle.opacity })`;
+particleContext.fill();
 
 
-    particleContext.beginPath();
-
-    particleContext.arc(
-      particle.x,
-      particle.y,
-      particle.radius,
-      0,
-      Math.PI * 2
-    );
-
-    particleContext.fillStyle =
-      `rgba(0, 184, 107, ${particle.opacity})`;
-
-    particleContext.fill();
 
   }
-
 }
 
-
 /* =========================================
-   FUTURE NETWORK
-   ========================================= */
+FUTURE NETWORK
+========================================= */
 
 let futureNodes = [];
 
-
-/* Number of nodes */
-
 function getFutureNodeCount() {
-
   if (prefersReducedMotion) {
     return 8;
   }
@@ -930,18 +857,12 @@ function getFutureNodeCount() {
   return 30;
 }
 
-
-/* Create network nodes */
-
 function createFutureNodes() {
-
   if (!futureCanvas) {
     return;
   }
 
-
   futureNodes = [];
-
 
   const width =
     futureCanvas.clientWidth;
@@ -949,47 +870,25 @@ function createFutureNodes() {
   const height =
     futureCanvas.clientHeight;
 
-
   const count =
     getFutureNodeCount();
-
 
   for (
     let i = 0;
     i < count;
     i++
   ) {
-
     futureNodes.push({
-
-      x:
-        Math.random() * width,
-
-      y:
-        Math.random() * height,
-
-      vx:
-        (Math.random() - 0.5) *
-        0.12,
-
-      vy:
-        (Math.random() - 0.5) *
-        0.12,
-
-      radius:
-        Math.random() * 1.4 + 0.6
-
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.12,
+      vy: (Math.random() - 0.5) * 0.12,
+      radius: Math.random() * 1.4 + 0.6
     });
-
   }
-
 }
 
-
-/* Draw future network */
-
 function drawFutureNetwork() {
-
   if (
     !futureCanvas ||
     !futureContext
@@ -997,13 +896,11 @@ function drawFutureNetwork() {
     return;
   }
 
-
   const width =
     futureCanvas.clientWidth;
 
   const height =
     futureCanvas.clientHeight;
-
 
   futureContext.clearRect(
     0,
@@ -1012,363 +909,180 @@ function drawFutureNetwork() {
     height
   );
 
-
-  /* Move nodes */
-
   futureNodes.forEach(
     (node) => {
-
       node.x += node.vx;
       node.y += node.vy;
 
+      
+  if (node.x <= 0 || node.x >= width) node.vx *= -1;
+  if (node.y <= 0 || node.y >= height) node.vy *= -1;
 
-      if (
-        node.x <= 0 ||
-        node.x >= width
-      ) {
-        node.vx *= -1;
-      }
-
-
-      if (
-        node.y <= 0 ||
-        node.y >= height
-      ) {
-        node.vy *= -1;
-      }
+  node.x = clamp(node.x, 0, width);
+  node.y = clamp(node.y, 0, height);
+}
 
 
-      node.x =
-        clamp(
-          node.x,
-          0,
-          width
-        );
 
-      node.y =
-        clamp(
-          node.y,
-          0,
-          height
-        );
-
-    }
-  );
-
-
-  /*
-    Connect nearby nodes.
-
-    Smaller connection distance on phones
-    means fewer lines and better performance.
-  */
+);
 
   const connectionDistance =
     window.innerWidth <= 600
       ? 105
       : 150;
 
-
   for (
     let i = 0;
     i < futureNodes.length;
     i++
   ) {
-
     for (
       let j = i + 1;
       j < futureNodes.length;
       j++
     ) {
+      const first = futureNodes[i];
+      const second = futureNodes[j];
 
-      const first =
-        futureNodes[i];
+      
+  const dx = first.x - second.x;
+  const dy = first.y - second.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
 
-      const second =
-        futureNodes[j];
+  if (distance < connectionDistance) {
+    const opacity =
+      (1 - distance / connectionDistance) * 0.18;
 
-
-      const dx =
-        first.x - second.x;
-
-      const dy =
-        first.y - second.y;
-
-
-      const distance =
-        Math.sqrt(
-          dx * dx +
-          dy * dy
-        );
-
-
-      if (
-        distance <
-        connectionDistance
-      ) {
-
-        const opacity =
-          (1 -
-            distance /
-            connectionDistance) *
-          0.18;
+    futureContext.beginPath();
+    futureContext.moveTo(first.x, first.y);
+    futureContext.lineTo(second.x, second.y);
+    futureContext.strokeStyle =
+      `rgba(0, 184, 107, ${ opacity })`;
+    futureContext.lineWidth = 0.7;
+    futureContext.stroke();
+  }
+}
 
 
+
+    }
+
+    futureNodes.forEach(
+      (node) => {
         futureContext.beginPath();
-
-        futureContext.moveTo(
-          first.x,
-          first.y
+        futureContext.arc(
+          node.x,
+          node.y,
+          node.radius,
+          0,
+          Math.PI * 2
         );
-
-        futureContext.lineTo(
-          second.x,
-          second.y
-        );
-
-        futureContext.strokeStyle =
-          `rgba(0, 184, 107, ${opacity})`;
-
-        futureContext.lineWidth =
-          0.7;
-
-        futureContext.stroke();
-
+        futureContext.fillStyle =
+          "rgba(0, 184, 107, 0.55)";
+        futureContext.fill();
       }
-
-    }
-
+    );
   }
 
+  /* =========================================
+  CANVAS INITIALIZATION & LOOP
+  ========================================= */
 
-  /* Draw nodes */
+  function initializeCanvases() {
+    resizeCanvas(particleCanvas, particleContext);
+    resizeCanvas(futureCanvas, futureContext);
+    createParticles();
+    createFutureNodes();
+  }
 
-  futureNodes.forEach(
-    (node) => {
+  initializeCanvases();
 
-      futureContext.beginPath();
+  let pageVisible = true;
 
-      futureContext.arc(
-        node.x,
-        node.y,
-        node.radius,
-        0,
-        Math.PI * 2
-      );
-
-      futureContext.fillStyle =
-        "rgba(0, 184, 107, 0.55)";
-
-      futureContext.fill();
-
+  document.addEventListener(
+    "visibilitychange",
+    () => {
+      pageVisible = !document.hidden;
     }
   );
 
-}
+  function animateCanvases() {
+    if (pageVisible) {
+      drawParticles();
+      drawFutureNetwork();
+    }
 
-
-/* =========================================
-   CANVAS INITIALIZATION
-   ========================================= */
-
-function initializeCanvases() {
-
-  resizeCanvas(
-    particleCanvas,
-    particleContext
-  );
-
-  resizeCanvas(
-    futureCanvas,
-    futureContext
-  );
-
-
-  createParticles();
-
-  createFutureNodes();
-
-}
-
-initializeCanvases();
-
-
-/* =========================================
-   CANVAS ANIMATION LOOP
-   ========================================= */
-
-let pageVisible = true;
-
-
-document.addEventListener(
-  "visibilitychange",
-  () => {
-
-    pageVisible =
-      !document.hidden;
-
+    requestAnimationFrame(
+      animateCanvases
+    );
   }
-);
-
-
-/*
-  One animation loop controls both canvases.
-
-  This is lighter than running multiple
-  independent animation loops.
-*/
-
-function animateCanvases() {
-
-  if (pageVisible) {
-
-    drawParticles();
-
-    drawFutureNetwork();
-
-  }
-
 
   requestAnimationFrame(
     animateCanvases
   );
 
-}
+  let canvasResizeTimer;
 
-requestAnimationFrame(
-  animateCanvases
-);
-
-
-/* =========================================
-   CANVAS RESIZE
-   ========================================= */
-
-let canvasResizeTimer;
-
-
-function handleCanvasResize() {
-
-  clearTimeout(
-    canvasResizeTimer
-  );
-
-
-  canvasResizeTimer =
-    setTimeout(
-      () => {
-
-        initializeCanvases();
-
-      },
-      180
-    );
-
-}
-
-
-window.addEventListener(
-  "resize",
-  handleCanvasResize
-);
-
-
-if (window.visualViewport) {
-
-  window.visualViewport.addEventListener(
-    "resize",
-    handleCanvasResize
-  );
-
-}
-
-
-/* =========================================
-   MOBILE PERFORMANCE
-   ========================================= */
-
-/*
-  On touch devices we don't need mouse-based
-  visual effects.
-
-  The page keeps the cinematic look while
-  avoiding unnecessary work on phones.
-*/
-
-if (!isTouchDevice) {
-
-  const orbit =
-    document.querySelector(
-      ".cursor-orbit"
-    );
-
-
-  if (orbit) {
-
-    let pointerX = 0;
-    let pointerY = 0;
-
-
-    window.addEventListener(
-      "pointermove",
-      (event) => {
-
-        pointerX =
-          (
-            event.clientX /
-            window.innerWidth -
-            0.5
-          ) * 18;
-
-
-        pointerY =
-          (
-            event.clientY /
-            window.innerHeight -
-            0.5
-          ) * 18;
-
-
-        orbit.style.transform =
-          `translate(
-            ${pointerX}px,
-            calc(-50% + ${pointerY}px)
-          )`;
-
-      },
-      {
-        passive: true
-      }
-    );
-
+  function handleCanvasResize() {
+    clearTimeout(canvasResizeTimer);
+    canvasResizeTimer = setTimeout(() => {
+      initializeCanvases();
+    }, 180);
   }
 
-}
+  window.addEventListener("resize", handleCanvasResize);
 
-
-/* =========================================
-   INITIAL PAGE SYNC
-   ========================================= */
-
-/*
-  Run one final measurement after fonts and
-  layout have had time to settle.
-*/
-
-window.addEventListener(
-  "load",
-  () => {
-
-    setTimeout(
-      () => {
-
-        calculateDimensions();
-
-        initializeCanvases();
-
-      },
-      250
-    );
-
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", handleCanvasResize);
   }
+
+  /* =========================================
+  MOUSE PARALLAX (NON-TOUCH)
+  ========================================= */
+
+  if (!isTouchDevice) {
+    const orbit = document.querySelector(".cursor-orbit");
+
+    if (orbit) {
+      let pointerX = 0;
+      let pointerY = 0;
+
+      
+window.addEventListener(
+  "pointermove",
+  (event) => {
+    pointerX =
+      (event.clientX / window.innerWidth - 0.5) * 18;
+    pointerY =
+      (event.clientY / window.innerHeight - 0.5) * 18;
+
+    orbit.style.transform =
+      `translate(\({ pointerX }px, calc(-50 % +\){ pointerY }px))`;
+  },
+  { passive: true }
 );
+
+
+
+    }
+  }
+
+  /* =========================================
+  INITIAL PAGE SYNC
+  ========================================= */
+
+  window.addEventListener(
+    "load",
+    () => {
+      setTimeout(
+        () => {
+          calculateDimensions();
+          initializeCanvases();
+        },
+        250
+      );
+    }
+  );
+
+  
+
